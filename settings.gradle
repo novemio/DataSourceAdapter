@@ -1,1 +1,1 @@
-include ':app', ':boostadapter'
+include ':app', ':rendererAdapter'
