@@ -12,49 +12,50 @@ import java.lang.ref.WeakReference
  * Created by novemio on 4/11/19.
  */
 open class RecyclerDataSource(
-		protected val renderers: Map<String, ItemRenderer<in RecyclerItem>>) {
+    protected val renderers: Map<String, ItemRenderer<out RecyclerItem>>
+) {
 
-		protected lateinit var recyclerReference: WeakReference<RecyclerAdapter>
+    protected  var recyclerReference: WeakReference<RecyclerAdapter> ?= null
 
-		protected val viewTypeToRenderKeyMap = HashMap<Int, String>()
-		private val data = mutableListOf<RecyclerItem>()
+    protected val viewTypeToRenderKeyMap = HashMap<Int, String>()
+    private val data = mutableListOf<RecyclerItem>()
 
-		init {
-				renderers.forEach {
-						viewTypeToRenderKeyMap[it.value.itemRes()] = it.key
-				}
-		}
+    init {
+        renderers.forEach {
+            viewTypeToRenderKeyMap[it.value.itemRes()] = it.key
+        }
+    }
 
-		fun rendererForType(viewType: Int) = renderers[viewTypeToRenderKeyMap[viewType]]!!
+    fun rendererForType(viewType: Int) = renderers[viewTypeToRenderKeyMap[viewType]]!!
 
-		@LayoutRes
-		fun viewResourceForPosition(position: Int) = renderers.getValue(data[position].renderKey()).itemRes()
+    @LayoutRes
+    fun viewResourceForPosition(position: Int) = renderers.getValue(data[position].renderKey()).itemRes()
 
-		@MainThread
-		fun setData(collection: List<RecyclerItem>) {
+    @MainThread
+    fun setData(collection: List<RecyclerItem>) {
 
-				val diffResult = DiffUtil.calculateDiff(RecyclerDiffCallback(data, collection))
-				data.clear()
-				data.addAll(collection)
-				recyclerReference.get()
-						?.let {
-								diffResult.dispatchUpdatesTo(it)
-						}
-		}
+        val diffResult = DiffUtil.calculateDiff(RecyclerDiffCallback(data, collection))
+        data.clear()
+        data.addAll(collection)
+        recyclerReference?.get()
+            ?.let {
+                diffResult.dispatchUpdatesTo(it)
+            }
+    }
 
-		@VisibleForTesting
-		fun setTestData(collection: List<RecyclerItem>) {
-				data.clear()
-				data.addAll(collection)
-		}
+    @VisibleForTesting
+    fun setTestData(collection: List<RecyclerItem>) {
+        data.clear()
+        data.addAll(collection)
+    }
 
 
-		fun getItem(position: Int) = data[position]
+    fun getItem(position: Int) = data[position]
 
-		fun getCount() = data.count()
+    fun getCount() = data.count()
 
-		internal fun attachAdapter(recyclerAdapter: RecyclerAdapter) {
-				this.recyclerReference = WeakReference(recyclerAdapter)
-		}
+    internal fun attachAdapter(recyclerAdapter: RecyclerAdapter) {
+        this.recyclerReference = WeakReference(recyclerAdapter)
+    }
 
 }
