@@ -1,7 +1,7 @@
 package com.example.datasourceadapter.screens
 
 import android.view.View
-import com.novemio.datasourceadapter.R
+import com.example.app.R
 import com.novemio.datasourceadapter.item.ItemRenderer
 import com.novemio.datasourceadapter.item.ViewBinderBase
 import kotlinx.android.synthetic.main.rv_item_section.view.*

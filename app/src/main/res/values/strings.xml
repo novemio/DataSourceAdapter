@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">DataSourceAdapter</string>
+    <string name="app_name">app</string>
+
+
+
+    <string-array name="array_cities">
+        <item>@string/app_name</item>
+    </string-array>
 </resources>

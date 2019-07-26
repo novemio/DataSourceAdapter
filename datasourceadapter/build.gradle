@@ -1,21 +1,7 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
-    }
-}
-
-
-
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
+ext.libVersionName = "0.3.1"
 android {
     compileSdkVersion 28
 
@@ -25,7 +11,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName libVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -41,25 +27,27 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha04'
+    implementation 'androidx.core:core-ktx:1.1.0-alpha05'
+
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation "com.google.dagger:dagger:2.16"
+
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.google.dagger:dagger:2.16'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-}
 
-repositories {
-    mavenCentral()
+
 }
 
 ext {
-    bintrayRepo = 'maven'
+    bintrayRepo = 'DataSourceAdapter'
     bintrayName = 'DataSourceAdapter'
-
+    bintrayUserOrg = 'novemio'
     publishedGroupId = 'com.novemio.datasourceadapter'
-    libraryName = 'DataSourceAdapter'
+    libraryName = 'datasourceadapter'
     artifact = 'datasourceadapter'
 
     libraryDescription = 'Recycler view adapter '
@@ -67,7 +55,7 @@ ext {
     siteUrl = 'https://github.com/novemio/DataSourceAdapter'
     gitUrl = 'https://github.com/novemio/DataSourceAdapter.git'
 
-    libraryVersion = '0.1.0'
+    libraryVersion = libVersionName
 
     developerId = 'novemio'
     developerName = 'Sekulic Milan '

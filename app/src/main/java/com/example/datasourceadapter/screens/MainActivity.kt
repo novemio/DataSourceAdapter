@@ -2,7 +2,7 @@ package com.example.datasourceadapter.screens
 
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.novemio.datasourceadapter.R
+import com.example.app.R
 import com.novemio.datasourceadapter.adapter.RecyclerAdapter
 import dagger.android.DaggerActivity
 import kotlinx.android.synthetic.main.activity_main.*

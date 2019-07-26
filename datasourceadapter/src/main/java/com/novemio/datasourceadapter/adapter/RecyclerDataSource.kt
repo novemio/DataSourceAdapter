@@ -12,10 +12,11 @@ import java.lang.ref.WeakReference
  * Created by novemio on 4/11/19.
  */
 open class RecyclerDataSource(
+
     protected val renderers: Map<String, ItemRenderer<out RecyclerItem>>
 ) {
 
-    protected  var recyclerReference: WeakReference<RecyclerAdapter> ?= null
+    protected var recyclerReference: WeakReference<RecyclerAdapter>? = null
 
     protected val viewTypeToRenderKeyMap = HashMap<Int, String>()
     private val data = mutableListOf<RecyclerItem>()
@@ -26,8 +27,10 @@ open class RecyclerDataSource(
         }
     }
 
-    internal fun attachAdapter(recyclerAdapter: RecyclerAdapter) {
+    open fun attachAdapter(recyclerAdapter: RecyclerAdapter) {
         this.recyclerReference = WeakReference(recyclerAdapter)
+        if (data.isNotEmpty()) recyclerAdapter.notifyDataSetChanged()
+
     }
 
     fun rendererForType(viewType: Int) = renderers[viewTypeToRenderKeyMap[viewType]]!!
@@ -37,20 +40,23 @@ open class RecyclerDataSource(
 
     @MainThread
     fun setData(collection: List<RecyclerItem>) {
-
-        val diffResult = DiffUtil.calculateDiff(RecyclerDiffCallback(data, collection))
-
+        val diffResult =
+            DiffUtil.calculateDiff(RecyclerDiffCallback(data, collection))
         data.clear()
         data.addAll(collection)
+        dispatchUpdates(collection, diffResult)
+
+    }
+
+    private fun dispatchUpdates(collection: List<RecyclerItem>, diffResult: DiffUtil.DiffResult) {
         recyclerReference?.get()
             ?.let {
                 diffResult.dispatchUpdatesTo(it)
             }
-
     }
 
     @MainThread
-    fun deleteItem(position:Int){
+    fun deleteItem(position: Int) {
         data.removeAt(position)
         recyclerReference?.get()?.notifyItemRemoved(position)
     }
@@ -62,10 +68,9 @@ open class RecyclerDataSource(
     }
 
 
-    fun getItem(position: Int) = data.get(position)
+    fun getItem(position: Int) = data[position]
 
     fun getCount() = data.count()
-
 
 
 }

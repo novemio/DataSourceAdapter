@@ -1,44 +1,78 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 group = publishedGroupId
 version = libraryVersion
 
-install {
-    repositories.mavenInstaller {
-        pom.project {
-            packaging 'aar'
-            groupId publishedGroupId
-            artifactId artifact
+publishing {
+    publications {
+        Production(MavenPublication) {
+            artifact("$buildDir/outputs/aar/datasourceadapter-release.aar") // replace with your library name
+            groupId this.group
+            artifactId 'datasourceadapter' // replace with your library artifact id
+            version this.version
 
-            name libraryName
-            description libraryDescription
-            url siteUrl
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
 
-            licenses {
-                license {
-                    name licenseName
-                    url licenseUrl
+                // Iterate over the implementation dependencies (we don't want the test ones),
+                // adding a <dependency> node for each
+                configurations.implementation.allDependencies.each {
+                    // Ensure dependencies such as fileTree are not included in the pom.
+                    if (it.name != 'unspecified') {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
                 }
-            }
-            developers {
-                developer {
-                    id developerId
-                    name developerName
-                    email developerEmail
-                }
-            }
-            scm {
-                connection gitUrl
-                developerConnection gitUrl
-                url siteUrl
             }
         }
     }
 }
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.srcDirs
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")?:System.getenv('BINTRAY_USER')
+    key = properties.getProperty("bintray.apiKey")?:System.getenv('BINTRAY_KEY')
+    publications =['Production']
+    configurations = ['archives']
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        // Default: false. Whether to run this as dry-run, without deploying
+        dryRun = false
+        // Default: false. Whether to override version artifacts already published
+        override = false
+        // Default: false. Whether version should be auto published after an upload
+        publish = true
+        publicDownloadNumbers = true
+        version {
+            name = this.version
+            released = new Date()
+            vcsTag = this.version
+        }
+    }
 }
+
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
+
+
+
+//task sourcesJar(type: Jar) {
+//    classifier = 'sources'
+//    from android.sourceSets.main.java.srcDirs
+//}
 
 //task javadoc(type: Javadoc) {
 //    source = android.sourceSets.main.java.srcDirs
@@ -50,60 +84,8 @@ task sourcesJar(type: Jar) {
 //    from javadoc.destinationDir
 //}
 
-artifacts {
-//    archives javadocJar
-    archives sourcesJar
-}
+//artifacts {
+////    archives javadocJar
+//    archives sourcesJar
+//}
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-
-    configurations = ['archives']
-    pkg {
-        repo = bintrayRepo
-        name = bintrayName
-        desc = libraryDescription
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-        licenses = allLicenses
-        dryRun = false
-        publish = true
-        override = false
-        publicDownloadNumbers = true
-        version {
-            desc = libraryDescription
-        }
-    }
-}
-
-tasks.withType(Javadoc) {
-    options.addStringOption('Xdoclint:none', '-quiet')
-    options.addStringOption('encoding', 'UTF-8')
-    options.addStringOption('charSet', 'UTF-8')
-}
-
-bintray {
-    user = project.hasProperty('user') ?: System.getenv('BINTRAY_USER')
-    key = project.hasProperty('apiKey') ?: System.getenv('BINTRAY_API_KEY')
-    publications = ['Production']
-    configurations = ['archives']
-    // Default: false. Whether to run this as dry-run, without deploying
-    dryRun = false
-    // Default: false. Whether to override version artifacts already published
-    override = false
-    // Default: false. Whether version should be auto published after an upload
-    publish = true
-    pkg {
-        repo = 'DataSourceAdapter' // the name of the repository you created on Bintray
-        name = 'com.novemio.datasourceadapter' // the name of the package you created inside it
-        version {
-            name = this.version
-            released = new Date()
-            vcsTag = this.version
-        }
-    }
-}

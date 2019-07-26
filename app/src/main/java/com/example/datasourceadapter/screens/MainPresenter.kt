@@ -22,7 +22,7 @@ constructor(private val dataSource: TestDataSource) {
 
         Timer().schedule(5000) {
             runOnUiThread {
-                dataSource.setData(listOf(Section("Section"), Test("Test"), Test("Dunja")))
+                dataSource.setData(listOf(Section("Mala"), Test("Test"), Test("Velika")))
             }
             Timer().schedule(2000) {
                 runOnUiThread {
