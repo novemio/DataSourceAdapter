@@ -16,6 +16,8 @@ open class RecyclerDataSource(
     protected val renderers: Map<String, ItemRenderer<out RecyclerItem>>
 ) {
 
+
+    open var clickListener: ((RecyclerItem) -> Unit)? = null
     protected var recyclerReference: WeakReference<RecyclerAdapter>? = null
 
     protected val viewTypeToRenderKeyMap = HashMap<Int, String>()

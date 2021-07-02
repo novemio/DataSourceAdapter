@@ -9,4 +9,13 @@ import com.novemio.datasourceadapter.item.RecyclerItem
  */
 class TestDataSource(map: Map<String, ItemRenderer<out RecyclerItem>>) : RecyclerDataSource(map) {
 
-}
+
+
+    override var clickListener: ((RecyclerItem) -> Unit)? =:: onItemClick
+
+    private fun onItemClick(item:RecyclerItem) {
+
+
+
+
+    }

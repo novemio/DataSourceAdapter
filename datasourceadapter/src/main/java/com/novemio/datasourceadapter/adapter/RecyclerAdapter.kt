@@ -2,6 +2,7 @@ package com.novemio.datasourceadapter.adapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.novemio.datasourceadapter.item.RecyclerItem
 
 /**
  * Created by novemio on 4/11/19.
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 class RecyclerAdapter(
     private val recyclerDataSource: RecyclerDataSource
 ) : RecyclerView.Adapter<RecyclerViewHolder>() {
+
 
 
     init {
@@ -23,6 +25,9 @@ class RecyclerAdapter(
 
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         holder.bind(recyclerDataSource.getItem(position))
+        holder.itemView.setOnClickListener {
+          recyclerDataSource.clickListener?.invoke(recyclerDataSource.getItem(position))
+        }
     }
 
     override fun getItemCount(): Int {
