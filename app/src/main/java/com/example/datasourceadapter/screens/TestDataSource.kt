@@ -13,7 +13,7 @@ class TestDataSource(map: Map<String, ItemRenderer<out RecyclerItem>>) : Recycle
 
     override var clickListener: ((RecyclerItem) -> Unit)? =:: onItemClick
 
-    private fun onItemClick(item:RecyclerItem) {
+    private fun onItemClick(item:RecyclerItem) {}
 
 
 
